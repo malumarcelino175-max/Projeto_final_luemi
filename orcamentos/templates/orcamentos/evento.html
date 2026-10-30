@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Dados do evento — Delícias da Mari{% endblock %}
+{% block description %}Informe a data, o endereço e seus contatos para calcularmos a taxa de deslocamento.{% endblock %}
+
+{% block content %}
+<div class="wrap narrow">
+  <div class="page-head">
+    <h1>Dados do evento</h1>
+    <p>Precisamos saber quando e onde será sua festa.</p>
+  </div>
+
+  <form class="card pad" id="form-evento" method="post" action="{% url 'evento' %}">
+    {% csrf_token %}
+    <div class="form-grid">
+      <div class="field">
+        <label for="nome">Seu nome</label>
+        <input id="nome" name="nome" required placeholder="Maria Silva" value="{{ evento.nome|default:'' }}" />
+      </div>
+      <div class="field">
+        <label for="telefone">Telefone / WhatsApp</label>
+        <input id="telefone" name="telefone" required placeholder="(11) 99999-9999" value="{{ evento.telefone|default:'' }}" />
+      </div>
+      <div class="field">
+        <label for="data">📅 Data do evento</label>
+        <input id="data" name="data" type="date" required value="{{ evento.data|default:'' }}" />
+      </div>
+      <div class="field full">
+        <label for="endereco">📍 Endereço completo do evento</label>
+        <input id="endereco" name="endereco" required placeholder="Rua, número, bairro, cidade — Estado" value="{{ evento.endereco|default:'' }}" />
+        {% if distancia_km %}
+        <p class="hint">
+          Distância estimada: <strong>{{ distancia_km }} km</strong>
+          {% if taxa %}<span class="fee">• taxa de deslocamento de R$ {{ taxa|floatformat:2 }} aplicada</span>
+          {% else %}<span class="ok">• sem taxa de deslocamento</span>{% endif %}
+        </p>
+        {% endif %}
+      </div>
+      <div class="field full" style="align-items:flex-end">
+        <button class="btn btn-primary" type="submit">Ver resumo →</button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

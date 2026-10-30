@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Orçamento enviado — Delícias da Mari{% endblock %}
+{% block description %}Recebemos seu orçamento e vamos entrar em contato em breve.{% endblock %}
+
+{% block content %}
+<div class="wrap narrow">
+  <div class="card pad" style="text-align:center">
+    <div class="icon-box" style="margin:0 auto">🎉</div>
+    <h1 style="margin:18px 0 8px">Orçamento registrado!</h1>
+    <p class="produto-desc">
+      Pedido #{{ pedido.id }} salvo com sucesso. Estamos abrindo o WhatsApp para você enviar os detalhes
+      à nossa equipe. Se a janela não abrir, use o botão abaixo.
+    </p>
+    <a class="btn btn-primary btn-lg" href="{{ whatsapp_url }}" target="_blank" rel="noreferrer">💬 Enviar pelo WhatsApp</a>
+    <div style="margin-top:14px"><a class="btn btn-ghost" href="{% url 'home' %}">Voltar ao início</a></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>window.open("{{ whatsapp_url|escapejs }}", "_blank");</script>
+{% endblock %}

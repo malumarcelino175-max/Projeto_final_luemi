@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Painel administrativo — Delícias da Mari{% endblock %}
+{% block description %}Acesso restrito ao painel de pedidos da Delícias da Mari.{% endblock %}
+
+{% block content %}
+<div class="wrap narrow" style="max-width:420px">
+  <div class="card pad">
+    <h1 style="font-size:22px">Painel administrativo</h1>
+    <p class="hint" style="margin:8px 0 18px">Informe a senha para ver os orçamentos recebidos.</p>
+    <form method="post" class="field">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.GET.next }}" />
+      <label for="senha">Senha</label>
+      <input id="senha" name="senha" type="password" required />
+      <button class="btn btn-primary btn-block" style="margin-top:16px" type="submit">Entrar</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

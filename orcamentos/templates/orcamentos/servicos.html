@@ -1,0 +1,53 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}Serviços — Delícias da Mari{% endblock %}
+{% block description %}Escolha churros, crepes, pipoca, algodão doce, sorvete e pula-pula para o seu evento.{% endblock %}
+
+{% block content %}
+<div class="wrap">
+  <div class="section-head">
+    <div class="page-head" style="margin:0">
+      <h1>Nossos serviços</h1>
+      <p>Monte o seu evento dos sonhos em poucos cliques.</p>
+    </div>
+    <div class="hero-actions" style="margin:0">
+      {% if is_admin %}<a class="btn btn-outline" href="{% url 'servico_criar' %}">+ Adicionar serviço</a>{% endif %}
+      <a class="btn btn-primary" href="{% url 'carrinho' %}">Ver carrinho →</a>
+    </div>
+  </div>
+  {% if is_admin %}<p class="hint" style="margin:-8px 0 18px">Modo administrador: você pode adicionar, editar e excluir serviços. Serviços ocultos aparecem só para você.</p>{% endif %}
+
+  <div class="grid cols-3">
+    {% for item in lista %}
+    <article class="card hoverable" data-produto="{{ item.p.slug }}" data-nome="{{ item.p.nome }}">
+      <div class="produto-img"><img src="{% static 'img/' %}{{ item.p.imagem }}" alt="{{ item.p.nome }}" loading="lazy" /></div>
+      <div class="produto-body">
+        <div class="produto-top">
+          <h3>{{ item.p.nome }}{% if not item.p.ativo %} <span class="tag">Oculto</span>{% endif %}</h3>
+          <span class="preco">R$ {{ item.p.preco|floatformat:2 }} <small>{{ item.p.unidade }}</small></span>
+        </div>
+        <p class="produto-desc">{{ item.p.descricao }}</p>
+        <div class="produto-acoes">
+          <div class="stepper">
+            <button type="button" class="menos" aria-label="Diminuir">−</button>
+            <span class="qtd">{{ item.qtd }}</span>
+            <button type="button" class="mais" aria-label="Aumentar">+</button>
+          </div>
+          <button type="button" class="btn btn-primary adicionar">Adicionar</button>
+        </div>
+        {% if is_admin %}
+        <div class="admin-acoes">
+          <a class="btn btn-outline" href="{% url 'servico_editar' item.p.pk %}">✏️ Editar</a>
+          <a class="btn btn-ghost" href="{% url 'servico_excluir' item.p.pk %}">🗑️ Excluir</a>
+        </div>
+        {% endif %}
+      </div>
+    </article>
+    {% empty %}
+    <div class="card pad" style="grid-column:1/-1;text-align:center">
+      <p class="hint">Nenhum serviço cadastrado ainda.</p>
+      {% if is_admin %}<a class="btn btn-primary" style="margin-top:12px" href="{% url 'servico_criar' %}">Adicionar o primeiro serviço</a>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
