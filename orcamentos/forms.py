@@ -4,8 +4,7 @@ from django import forms
 from django.conf import settings
 from django.utils.text import slugify
 
-from .models import Produto, Pedido
-
+from .models import Produto
 
 EXTENSOES = (".jpg", ".jpeg", ".png", ".webp")
 IGNORAR = {"logo.png", "hero-quem-somos.jpg"}
@@ -124,37 +123,3 @@ class ProdutoForm(forms.ModelForm):
         if commit:
             produto.save()
         return produto
-
-
-class PedidoForm(forms.ModelForm):
-    """Formulário para cadastro e atualização de pedidos de orçamento."""
-
-    class Meta:
-        model = Pedido
-        fields = [
-            "cliente_nome",
-            "cliente_telefone",
-            "data_evento",
-            "endereco",
-            "distancia_km",
-            "taxa_deslocamento",
-            "status",
-        ]
-        labels = {
-            "cliente_nome": "Nome do Cliente",
-            "cliente_telefone": "Telefone / WhatsApp",
-            "data_evento": "Data do Evento",
-            "endereco": "Endereço do Evento",
-            "distancia_km": "Distância (km)",
-            "taxa_deslocamento": "Taxa de Deslocamento (R$)",
-            "status": "Status do Pedido",
-        }
-        widgets = {
-            "cliente_nome": forms.TextInput(attrs={"placeholder": "Ex.: João Silva"}),
-            "cliente_telefone": forms.TextInput(attrs={"placeholder": "(00) 00000-0000"}),
-            "data_evento": forms.DateInput(attrs={"type": "date"}),
-            "endereco": forms.TextInput(attrs={"placeholder": "Rua, Número, Bairro, Cidade"}),
-            "distancia_km": forms.NumberInput(attrs={"min": "0"}),
-            "taxa_deslocamento": forms.NumberInput(attrs={"step": "0.01", "min": "0.00"}),
-            "status": forms.Select(),
-        }

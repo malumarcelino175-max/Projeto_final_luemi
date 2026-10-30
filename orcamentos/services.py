@@ -1,72 +1,86 @@
 from decimal import Decimal
+
+from django.conf import settings
+
 from .models import Produto
 
+CARRINHO_KEY = "carrinho"
+EVENTO_KEY = "evento"
+
+
 def get_carrinho(request):
-    """Retorna o dicionário {slug: quantidade} guardado na sessão."""
-    return request.session.get('carrinho', {})
+    """Retorna {slug: quantidade} guardado na sessão."""
+    return {k: int(v) for k, v in request.session.get(CARRINHO_KEY, {}).items() if int(v) > 0}
+
 
 def set_quantidade(request, slug, quantidade):
-    """Define ou atualiza a quantidade de um produto no carrinho."""
-    carrinho = get_carrinho(request)
-    qtd = int(quantidade)
-    if qtd > 0:
-        carrinho[slug] = qtd
-    else:
+    carrinho = request.session.get(CARRINHO_KEY, {})
+    quantidade = max(0, int(quantidade))
+    if quantidade == 0:
         carrinho.pop(slug, None)
-    request.session['carrinho'] = carrinho
+    else:
+        carrinho[slug] = quantidade
+    request.session[CARRINHO_KEY] = carrinho
     request.session.modified = True
 
-def set_evento(request, dados):
-    """Guarda os dados do evento na sessão."""
-    request.session['evento'] = dados
-    request.session.modified = True
-
-def get_evento(request):
-    """Retorna os dados do evento guardados na sessão."""
-    return request.session.get('evento', {'nome': '', 'telefone': '', 'data': '', 'endereco': ''})
-
-def calcular_taxa(distancia_km):
-    """Calcula a taxa de deslocamento com base na distância em km."""
-    base = Decimal('5.00')
-    por_km = Decimal('2.00')
-    return base + (Decimal(str(distancia_km)) * por_km)
-
-def calcular(request):
-    """Calcula subtotal, taxa de deslocamento e total geral do carrinho."""
-    carrinho = get_carrinho(request)
-    itens = []
-    subtotal = Decimal('0.00')
-    
-    for slug, qtd in carrinho.items():
-        try:
-            produto = Produto.objects.get(slug=slug, ativo=True)
-            sub = produto.preco * qtd
-            subtotal += sub
-            itens.append({
-                'produto': produto,
-                'quantidade': qtd,
-                'subtotal': sub
-            })
-        except Produto.DoesNotExist:
-            continue
-            
-    distancia_km = 10  # Valor padrão para cálculo de exemplo
-    taxa = calcular_taxa(distancia_km)
-    total = subtotal + taxa
-    
-    evento = get_evento(request)
-    
-    return {
-        'itens': itens,
-        'subtotal': subtotal,
-        'distancia_km': distancia_km,
-        'taxa': taxa,
-        'total': total,
-        'evento': evento
-    }
 
 def limpar(request):
-    """Limpa o carrinho e os dados do evento da sessão após finalizar o pedido."""
-    request.session.pop('carrinho', None)
-    request.session.pop('evento', None)
+    request.session.pop(CARRINHO_KEY, None)
+    request.session.pop(EVENTO_KEY, None)
     request.session.modified = True
+
+
+def get_evento(request):
+    return request.session.get(EVENTO_KEY, {})
+
+
+def set_evento(request, dados):
+    request.session[EVENTO_KEY] = dados
+    request.session.modified = True
+
+
+def distancia_estimada(endereco: str) -> int:
+    """Estimativa simples e determinística a partir do endereço.
+
+    Substitua por uma chamada à API de geocodificação (ex.: Google Distance
+    Matrix) quando tiver a chave disponível.
+    """
+    endereco = (endereco or "").strip()
+    if not endereco:
+        return 0
+    h = 0
+    for ch in endereco:
+        h = (h * 31 + ord(ch)) % (2**32)
+    return (h % 90) + 5
+
+
+def calcular(request):
+    carrinho = get_carrinho(request)
+    produtos = {p.slug: p for p in Produto.objects.filter(slug__in=carrinho.keys())}
+    itens = []
+    subtotal = Decimal("0")
+    for slug, qtd in carrinho.items():
+        produto = produtos.get(slug)
+        if not produto:
+            continue
+        total_item = produto.preco * qtd
+        subtotal += total_item
+        itens.append({"produto": produto, "quantidade": qtd, "subtotal": total_item})
+
+    evento = get_evento(request)
+    km = distancia_estimada(evento.get("endereco", ""))
+    livre = settings.FREE_DELIVERY_KM
+    taxa = Decimal("0")
+    if km > livre:
+        taxa = Decimal(str((km - livre) * settings.DELIVERY_FEE_PER_KM))
+    taxa = taxa.quantize(Decimal("0.01"))
+
+    return {
+        "itens": itens,
+        "subtotal": subtotal,
+        "distancia_km": km,
+        "km_extras": max(0, km - livre),
+        "taxa": taxa,
+        "total": subtotal + taxa,
+        "evento": evento,
+    }
