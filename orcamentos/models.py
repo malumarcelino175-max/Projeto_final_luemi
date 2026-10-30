@@ -63,4 +63,3 @@ class ItemPedido(models.Model):
 
     def __str__(self):
         return f"{self.nome} x{self.quantidade}"
-
