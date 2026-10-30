@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Resumo do orçamento — Delícias da Mari{% endblock %}
+{% block description %}Confira os itens, a data, o endereço e o valor total antes de enviar seu orçamento.{% endblock %}
+
+{% block content %}
+<div class="wrap narrow">
+  <div class="page-head">
+    <h1>Resumo do orçamento</h1>
+    <p>Confira tudo antes de enviar para nossa equipe.</p>
+  </div>
+
+  {% if itens %}
+  <div class="card pad">
+    <div class="grid cols-2">
+      <div class="info-box"><span>Cliente</span><strong>{{ evento.nome|default:"—" }}</strong></div>
+      <div class="info-box"><span>Telefone</span><strong>{{ evento.telefone|default:"—" }}</strong></div>
+      <div class="info-box"><span>Data</span><strong>{{ evento.data|default:"—" }}</strong></div>
+      <div class="info-box"><span>Distância</span><strong>{{ distancia_km }} km</strong></div>
+    </div>
+    <div class="info-box" style="margin-top:20px"><span>Endereço</span><strong>{{ evento.endereco|default:"—" }}</strong></div>
+
+    <div class="sep"></div>
+    {% for item in itens %}
+    <div class="row"><span>{{ item.produto.nome }} × {{ item.quantidade }}</span><strong>R$ {{ item.subtotal|floatformat:2 }}</strong></div>
+    {% endfor %}
+    <div class="sep"></div>
+
+    <div class="row"><span>Subtotal</span><strong>R$ {{ subtotal|floatformat:2 }}</strong></div>
+    <div class="row">
+      <span>Taxa de deslocamento{% if km_extras %} ({{ km_extras }} km extras){% endif %}</span>
+      <strong>R$ {{ taxa|floatformat:2 }}</strong>
+    </div>
+    <div class="row big"><span style="color:inherit">Total</span><strong>R$ {{ total|floatformat:2 }}</strong></div>
+
+    <form method="post" action="{% url 'finalizar' %}" style="margin-top:22px">
+      {% csrf_token %}
+      <button class="btn btn-primary btn-lg btn-block" type="submit">💬 Finalizar e enviar via WhatsApp</button>
+    </form>
+  </div>
+  {% else %}
+  <div class="empty">
+    <div class="emoji">📋</div>
+    <p>Nenhum item no orçamento ainda.</p>
+    <a class="btn btn-outline" href="{% url 'servicos' %}">Ver serviços</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

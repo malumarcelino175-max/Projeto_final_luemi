@@ -1,0 +1,44 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}Carrinho — Delícias da Mari{% endblock %}
+{% block description %}Revise os itens e quantidades escolhidos para o seu evento.{% endblock %}
+
+{% block content %}
+<div class="wrap narrow">
+  <div class="page-head">
+    <h1>Seu carrinho</h1>
+    <p>Revise os itens e quantidades do seu evento.</p>
+  </div>
+
+  {% if itens %}
+  <div class="card pad">
+    {% for item in itens %}
+    <div class="linha-item" data-linha="{{ item.produto.slug }}">
+      <img src="{% static 'img/' %}{{ item.produto.imagem }}" alt="{{ item.produto.nome }}" />
+      <div class="linha-info">
+        <strong>{{ item.produto.nome }}</strong>
+        <small>R$ {{ item.produto.preco|floatformat:2 }} {{ item.produto.unidade }}</small>
+      </div>
+      <div class="stepper">
+        <button type="button" class="menos" aria-label="Diminuir">−</button>
+        <span class="qtd">{{ item.quantidade }}</span>
+        <button type="button" class="mais" aria-label="Aumentar">+</button>
+      </div>
+      <div class="linha-total">R$ {{ item.subtotal|floatformat:2 }}</div>
+      <button type="button" class="remover" aria-label="Remover">🗑</button>
+    </div>
+    {% endfor %}
+    <div class="total-linha"><span>Subtotal</span><span>R$ {{ subtotal|floatformat:2 }}</span></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:22px">
+      <a class="btn btn-primary" href="{% url 'evento' %}">Continuar →</a>
+    </div>
+  </div>
+  {% else %}
+  <div class="empty">
+    <div class="emoji">🛒</div>
+    <p>Seu carrinho está vazio.</p>
+    <a class="btn btn-outline" href="{% url 'servicos' %}">Ver serviços</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+

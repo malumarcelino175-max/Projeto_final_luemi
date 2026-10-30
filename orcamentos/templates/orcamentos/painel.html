@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Pedidos recebidos — Delícias da Mari{% endblock %}
+{% block description %}Lista dos orçamentos e pedidos recebidos pela Delícias da Mari.{% endblock %}
+
+{% block content %}
+<div class="wrap">
+  <div class="section-head">
+    <div class="page-head" style="margin:0">
+      <h1>Pedidos recebidos</h1>
+      <p>Orçamentos enviados pelos clientes.</p>
+    </div>
+    <a class="btn btn-outline" href="{% url 'painel_logout' %}">Sair</a>
+  </div>
+
+  <div class="stats">
+    <div class="card stat"><span>Orçamentos</span><strong>{{ qtd }}</strong></div>
+    <div class="card stat"><span>Valor total</span><strong>R$ {{ faturamento|floatformat:2 }}</strong></div>
+    <div class="card stat"><span>Gerenciar serviços</span><a class="btn btn-ghost" href="{% url 'servicos' %}">Abrir catálogo</a> <a class="btn btn-ghost" href="{% url 'servico_criar' %}">+ Novo serviço</a></div>
+  </div>
+
+  <div class="card pad table-wrap">
+    {% if pedidos %}
+    <table>
+      <thead>
+        <tr><th>#</th><th>Cliente</th><th>Data do evento</th><th>Itens</th><th>Distância</th><th>Total</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        {% for p in pedidos %}
+        <tr>
+          <td>{{ p.id }}</td>
+          <td>{{ p.cliente_nome }}<br /><small class="hint">{{ p.cliente_telefone }}</small></td>
+          <td>{{ p.data_evento|date:"d/m/Y" }}<br /><small class="hint">{{ p.endereco }}</small></td>
+          <td>{% for i in p.itens.all %}{{ i.nome }} ×{{ i.quantidade }}{% if not forloop.last %}<br />{% endif %}{% endfor %}</td>
+          <td>{{ p.distancia_km }} km</td>
+          <td><strong>R$ {{ p.total|floatformat:2 }}</strong></td>
+          <td><span class="tag">{{ p.get_status_display }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="hint" style="text-align:center;padding:30px 0">Nenhum orçamento recebido ainda.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

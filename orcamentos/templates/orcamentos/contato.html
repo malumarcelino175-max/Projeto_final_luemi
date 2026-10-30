@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Contato — Delícias da Mari{% endblock %}
+{% block description %}Fale com a Delícias da Mari por WhatsApp, telefone, e-mail ou Instagram.{% endblock %}
+
+{% block content %}
+<div class="wrap narrow">
+  <div class="page-head" style="text-align:center">
+    <h1>Fale com a gente</h1>
+    <p>Estamos prontos para adoçar o seu evento.</p>
+  </div>
+
+  <div class="grid cols-2">
+    <a class="card hoverable contato-card" href="https://wa.me/{{ whatsapp }}" target="_blank" rel="noreferrer">
+      <div class="icon-box">💬</div><div><small>WhatsApp</small><strong>(11) 99999-9999</strong></div>
+    </a>
+    <a class="card hoverable contato-card" href="tel:+5511999999999">
+      <div class="icon-box">📞</div><div><small>Telefone</small><strong>(11) 99999-9999</strong></div>
+    </a>
+    <a class="card hoverable contato-card" href="mailto:contato@deliciasdamari.com.br">
+      <div class="icon-box">✉️</div><div><small>E-mail</small><strong>contato@deliciasdamari.com.br</strong></div>
+    </a>
+    <a class="card hoverable contato-card" href="https://instagram.com/deliciasdamari" target="_blank" rel="noreferrer">
+      <div class="icon-box">📷</div><div><small>Instagram</small><strong>@deliciasdamari</strong></div>
+    </a>
+  </div>
+
+  <div class="card pad" style="margin-top:26px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between">
+    <p class="hint" style="margin:0">📍 Atendemos eventos em toda a região metropolitana.</p>
+    <a class="btn btn-primary" href="https://wa.me/{{ whatsapp }}" target="_blank" rel="noreferrer">Chamar no WhatsApp</a>
+  </div>
+</div>
+{% endblock %}

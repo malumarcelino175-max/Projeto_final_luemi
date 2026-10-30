@@ -1,0 +1,71 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}Delícias da Mari — Confeitaria para eventos{% endblock %}
+{% block description %}Confeitaria especializada em tornar momentos especiais ainda mais doces. Churros, crepes, pipoca gourmet, bolos e doces para festas.{% endblock %}
+
+{% block content %}
+<div class="wrap">
+  <section class="hero">
+    <div>
+      <span class="pill">✨ Quem Somos</span>
+      <h1>Bem-vindo à <span>Delícias da Mari</span></h1>
+      <p>
+        A Delícias da Mari é uma confeitaria especializada em tornar momentos especiais ainda mais
+        doces. Trabalhamos com churros, crepes, pipoca gourmet, bolos, doces e diversos serviços para
+        festas e eventos. Nosso objetivo é oferecer produtos de qualidade, atendimento acolhedor e
+        experiências inesquecíveis para nossos clientes.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary btn-lg" href="{% url 'servicos' %}">Montar meu evento →</a>
+        <a class="btn btn-outline btn-lg" href="{% url 'contato' %}">Fale conosco</a>
+      </div>
+    </div>
+    <div class="hero-img">
+      <img src="{% static 'img/hero-quem-somos.jpg' %}" alt="Mesa de doces decorada em tons de rosa e dourado" />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="grid cols-3">
+      <div class="card hoverable pad">
+        <div class="icon-box">🎯</div>
+        <h3 style="margin:14px 0 8px">Missão</h3>
+        <p class="produto-desc" style="margin:0">Adoçar e encantar cada evento com produtos artesanais e atendimento dedicado.</p>
+      </div>
+      <div class="card hoverable pad">
+        <div class="icon-box">👁️</div>
+        <h3 style="margin:14px 0 8px">Visão</h3>
+        <p class="produto-desc" style="margin:0">Ser referência em confeitaria para festas, reconhecida pelo cuidado e qualidade.</p>
+      </div>
+      <div class="card hoverable pad">
+        <div class="icon-box">💖</div>
+        <h3 style="margin:14px 0 8px">Valores</h3>
+        <p class="produto-desc" style="margin:0">Carinho, qualidade, transparência e a alegria de celebrar com nossos clientes.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <h2>Nossos serviços</h2>
+        <p>Conheça algumas das nossas delícias para o seu evento.</p>
+      </div>
+      <a class="btn btn-ghost" href="{% url 'servicos' %}">Ver tudo →</a>
+    </div>
+    <div class="grid cols-3">
+      {% for p in destaques %}
+      <article class="card hoverable">
+        <div class="produto-img"><img src="{% static 'img/' %}{{ p.imagem }}" alt="{{ p.nome }}" loading="lazy" /></div>
+        <div class="produto-body">
+          <div class="produto-top">
+            <h3>{{ p.nome }}</h3>
+            <span class="preco">R$ {{ p.preco|floatformat:2 }}</span>
+          </div>
+          <p class="produto-desc">{{ p.descricao }}</p>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}
