@@ -225,3 +225,46 @@ def painel(request):
         {"pedidos": pedidos, "qtd": len(pedidos), "faturamento": total},
     )
 
+@painel_required
+def item_pedido_adicionar(request, pedido_id):
+    """Adiciona um novo produto como item de um pedido existente no painel."""
+    pedido = get_object_or_404(Pedido, pk=pedido_id)
+    if request.method == "POST":
+        produto_id = request.POST.get("produto_id")
+        quantidade = int(request.POST.get("quantidade", 1))
+        
+        produto = get_object_or_404(Produto, pk=produto_id)
+        
+        ItemPedido.objects.create(
+            pedido=pedido,
+            produto=produto,
+            nome=produto.nome,
+            preco=produto.preco,
+            quantidade=quantidade
+        )
+        
+        # Recalcula o subtotal e o total do pedido
+        pedido.subtotal = sum(item.subtotal for item in pedido.itens.all())
+        pedido.total = pedido.subtotal + pedido.taxa_deslocamento
+        pedido.save()
+        
+        messages.success(request, f"Item “{produto.nome}” adicionado ao pedido #{pedido.pk}.")
+    return redirect("painel")
+
+
+@painel_required
+def item_pedido_remover(request, item_id):
+    """Remove um item do pedido e atualiza os totais."""
+    item = get_object_or_404(ItemPedido, pk=item_id)
+    pedido = item.pedido
+    nome_item = item.nome
+    
+    item.delete()
+    
+    # Recalcula os valores após remoção
+    pedido.subtotal = sum(i.subtotal for i in pedido.itens.all())
+    pedido.total = pedido.subtotal + pedido.taxa_deslocamento
+    pedido.save()
+    
+    messages.success(request, f"Item “{nome_item}” removido do pedido.")
+    return redirect("painel")
