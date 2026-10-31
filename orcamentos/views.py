@@ -41,7 +41,7 @@ def home(request):
 
 def servicos(request):
     admin = is_admin(request)
-    produtos = Produto.objects.all() if admin else Produto.objects.filter(ativo=True)
+    produtos = Produto.objects.all()
     carrinho = services.get_carrinho(request)
     lista = [{"p": p, "qtd": carrinho.get(p.slug, 0)} for p in produtos]
     return render(request, "orcamentos/servicos.html", {"lista": lista, "is_admin": admin})
